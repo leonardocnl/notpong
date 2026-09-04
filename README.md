@@ -34,8 +34,7 @@ Basta abrir o arquivo `index.html` em qualquer navegador web moderno para começ
 
 ## Link GitHub Pages
 
-(Será preenchido após a publicação)
-https://leonardo.github.io/notpong/
+https://leonardocnl.github.io/notpong/
 
 ---
 
