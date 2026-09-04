@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>NOTPONG</title>
+
+    <!-- Fonts & Icons -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=Space+Grotesk:wght@500;700&family=Space+Mono:ital,wght@0,400;0,700&family=DotGothic16&display=swap"
+        rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body class="dot-bg relative overflow-hidden">
+
+    <!-- Back Button -->
+    <div class="back-button-container">
+        <button id="btnTopBack" class="btn-outline group flex items-center gap-2 px-2 py-1">
+            <span class="material-symbols-outlined icon-arrow-back" style="font-size: 14px;">arrow_back</span>
+            <span>Voltar</span>
+        </button>
+    </div>
+
+    <!-- Hidden element to prevent JS errors -->
+    <div id="controlsHint" class="hidden"></div>
+
+    <!-- Main Content -->
+    <main class="game-container">
+
+        <!-- Scoreboard Header -->
+        <header class="game-header">
+            <div class="flex flex-col items-center">
+                <div class="score-value text-primary" id="scoreDay">0</div>
+                <div class="score-label" id="p1Label">CPU</div>
+            </div>
+
+            <div class="flex flex-col items-center">
+                <div class="time-value" id="timerDisplay">0.00s</div>
+                <div class="score-label">Tempo</div>
+            </div>
+
+            <div class="flex flex-col items-center">
+                <div class="score-value" style="color: var(--color-surface-variant);" id="scoreNight">0</div>
+                <div class="score-label" id="p2Label">Jogador</div>
+            </div>
+        </header>
+
+        <!-- Game Area -->
+        <section class="game-canvas-wrapper">
+            <canvas style="display: block; width: 100%; height: 100%; object-fit: contain;" id="pongCanvas" width="1300"
+                height="600"></canvas>
+
+            <!-- Game Overlay -->
+            <div id="overlay"
+                class="absolute inset-0 overlay-bg flex flex-col items-center justify-center transition-opacity z-40"
+                style="transition-duration: 300ms;">
+                <h2 class="hero-title text-primary mb-2 text-center" style="font-size: 3rem;" id="overlayTitle">ESCOLHA
+                    O MODO</h2>
+                <p class="text-primary mb-8 text-center" style="font-size: 1.125rem;" id="overlayDesc">
+                    Destrua todos os blocos brancos o mais rápido possível.<br>
+                    <span class="text-interactive-red mt-2 flex justify-center font-bold"
+                        style="font-size: 0.875rem;">(Pressione ESC para pausar o jogo)</span>
+                </p>
+
+                <div id="modeButtons" class="flex gap-6">
+                    <button id="btn1Player" class="btn-secondary px-8 py-4">1 JOGADOR</button>
+                    <button id="btn2Players" class="btn-secondary px-8 py-4">2 JOGADORES</button>
+                </div>
+
+                <div id="nameInputContainer" class="hidden flex-col items-center gap-4">
+                    <input type="text" id="playerNameInput" placeholder="JOGADOR" class="input-primary px-6 py-3"
+                        style="width: 16rem;" maxlength="10">
+                    <button id="btnStartSingle" class="btn-secondary px-8 py-4 w-full">COMEÇAR</button>
+                </div>
+
+                <div id="gameOverButtons" class="hidden flex-col items-center gap-4 mt-6">
+                    <button id="btnPlayAgain" class="btn-secondary px-8 py-4 w-full">JOGAR NOVAMENTE</button>
+                    <button id="btnBackToMenu" class="btn-ghost px-8 py-2 w-full">VOLTAR</button>
+                </div>
+
+                <div id="scoreboard" class="hidden flex-col items-center mt-6 w-full" style="max-width: 24rem;">
+                    <h3 class="font-display-lg text-interactive-red mb-2" style="font-size: 1.5rem;">TOP 3 TEMPOS</h3>
+                    <div id="scoreboardList" class="w-full flex flex-col gap-2 font-label-dot-matrix text-primary"
+                        style="font-size: 1.125rem;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pause Overlay -->
+            <div id="pauseOverlay"
+                class="absolute inset-0 overlay-bg hidden flex-col items-center justify-center transition-opacity z-40"
+                style="transition-duration: 300ms;">
+                <h2 class="hero-title text-primary mb-2 text-center" style="font-size: 3rem;">PAUSADO</h2>
+                <p class="font-label-dot-matrix text-muted-text" style="font-size: 1.125rem;">Pressione ESC para
+                    continuar</p>
+            </div>
+        </section>
+
+        <!-- Powerup Timers UI -->
+        <footer class="powerup-footer">
+            <div id="uiBigPaddle" class="flex items-center gap-2 opacity-0" style="transition: opacity 200ms;">
+                <span style="width: 1rem; height: 1rem; border-radius: 0.125rem; background-color: #00ffff;"></span>
+                <span class="font-label-dot-matrix text-muted-text uppercase"
+                    style="font-size: 0.875rem; letter-spacing: 0.1em;">Raquete Gigante:
+                    <span id="timeBigPaddle" style="color: #00ffff;">0.0</span>s</span>
+            </div>
+
+            <div id="uiBigBall" class="flex items-center gap-2 opacity-0" style="transition: opacity 200ms;">
+                <span style="width: 1rem; height: 1rem; border-radius: 9999px; background-color: #39ff14;"></span>
+                <span class="font-label-dot-matrix text-muted-text uppercase"
+                    style="font-size: 0.875rem; letter-spacing: 0.1em;">Bola Gigante:
+                    <span id="timeBigBall" style="color: #39ff14;">0.0</span>s</span>
+            </div>
+
+            <div id="uiBombBall" class="flex items-center gap-2 opacity-0" style="transition: opacity 200ms;">
+                <span style="width: 1rem; height: 1rem; border-radius: 9999px; background-color: #ff00ff;"></span>
+                <span class="font-label-dot-matrix text-muted-text uppercase"
+                    style="font-size: 0.875rem; letter-spacing: 0.1em;">Bola Bomba:
+                    <span id="timeBombBall" style="color: #ff00ff;">0.0</span>s</span>
+            </div>
+        </footer>
+
+    </main>
+
+    <script type="module" src="src/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>NOTPONG</title>
+
+    <!-- Fonts & Icons -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
+
+    <!-- Custom CSS -->
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="dot-bg relative">
+
+    <main class="flex-grow w-full px-4 py-12 flex flex-col relative z-10">
+        <div class="flex-grow flex items-center justify-center min-h-0 w-full">
+            <div class="w-full main-container flex flex-col items-center justify-center">
+
+                <!-- Hero Section -->
+                <header class="text-center w-full mb-10">
+                    <h1 class="hero-title hero-glow animate-glow-pulse text-primary">
+                        NOT<span class="text-interactive-red">PONG</span>
+                    </h1>
+                </header>
+
+                <!-- Information Section -->
+                <section class="panel-container relative group w-full mb-8">
+                    <div class="absolute inset-0 pointer-events-none opacity-100 arcade-grid-overlay"></div>
+
+                    <div class="panel-grid relative z-10 w-full mb-8">
+                        <!-- Left Column: Controls & Objective -->
+                        <div class="sub-panel flex flex-col h-full gap-6">
+                            <!-- Controls -->
+                            <article>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="material-symbols-outlined text-interactive-red">gamepad</span>
+                                    <h3 class="text-primary font-display-lg font-bold uppercase">
+                                        Controles</h3>
+                                </div>
+                                <ul class="text-muted-text">
+                                    <li class="flex justify-between items-center py-2">
+                                        <span><strong>1 Jogador:</strong> Jogador usa <span
+                                                class="text-primary font-bold">SETAS</span></span>
+                                    </li>
+                                    <li class="flex justify-between items-center py-2">
+                                        <span><strong>2 Jogadores:</strong> Jogador 1 usa <span
+                                                class="text-primary font-bold">W/S</span> e Jogador 2 usa <span
+                                                class="text-primary font-bold">SETAS</span></span>
+                                    </li>
+                                </ul>
+                            </article>
+
+                            <!-- Objective -->
+                            <article>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="material-symbols-outlined text-interactive-red">flag</span>
+                                    <h3 class="text-primary font-display-lg font-bold uppercase">
+                                        Objetivo</h3>
+                                </div>
+                                <p class="text-muted-text mt-2">
+                                    <strong class="text-primary">Modo 1 Jogador:</strong> Destrua todos os blocos
+                                    brancos no menor tempo.<br><br>
+                                    <strong class="text-primary">Modo 2 Jogadores:</strong> O primeiro jogador a marcar
+                                    10 pontos vence.
+                                </p>
+                            </article>
+                        </div>
+
+                        <!-- Right Column: Power-ups -->
+                        <div class="sub-panel flex flex-col h-full">
+                            <!-- Power-ups -->
+                            <article>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="material-symbols-outlined text-interactive-red">bolt</span>
+                                    <h3 class="text-primary font-display-lg font-bold uppercase">
+                                        Power-ups (Modo 1 Jogador)</h3>
+                                </div>
+                                <div class="flex flex-col gap-4">
+                                    <div class="flex items-start gap-4 py-2">
+                                        <div class="flex-shrink-0 mt-1 powerup-cyan-bg" style="width: 24px; height: 24px;"></div>
+                                        <div>
+                                            <h4 class="font-bold text-primary uppercase mb-1">
+                                                Raquete Gigante</h4>
+                                            <p class="text-xs text-muted-text">Aumenta drasticamente o tamanho da sua
+                                                raquete.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-start gap-4 py-2">
+                                        <div class="flex-shrink-0 mt-1 powerup-green-bg" style="width: 24px; height: 24px;"></div>
+                                        <div>
+                                            <h4 class="font-bold text-primary uppercase mb-1">
+                                                Bola Gigante</h4>
+                                            <p class="text-xs text-muted-text">Área de impacto maior para destruir
+                                                blocos.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-start gap-4 py-2">
+                                        <div class="flex-shrink-0 mt-1 powerup-magenta-bg" style="width: 24px; height: 24px;"></div>
+                                        <div>
+                                            <h4 class="font-bold text-primary uppercase mb-1">
+                                                Bola Bomba</h4>
+                                            <p class="text-xs text-muted-text">Destrói múltiplos blocos ao redor do
+                                                impacto.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-start gap-4 py-2">
+                                        <div class="flex-shrink-0 mt-1" style="width: 24px; height: 24px; background-color: #ffff00;"></div>
+                                        <div>
+                                            <h4 class="font-bold text-primary uppercase mb-1">
+                                                Multi-Ball</h4>
+                                            <p class="text-xs text-muted-text">A bola atual se divide, criando bolas extras caóticas.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-start gap-4 py-2">
+                                        <div class="flex-shrink-0 mt-1 flex items-center justify-center" style="width: 24px; height: 24px; background: linear-gradient(red,orange,yellow,lime,blue,magenta,red);"></div>
+                                        <div>
+                                            <h4 class="font-bold text-primary uppercase mb-1">
+                                                Bloco Arco-íris</h4>
+                                            <p class="text-xs text-muted-text">Aparece e some rapidamente. Destrói todos
+                                                os blocos restantes se for atingido.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+
+                    <!-- Play Button (Full Width) -->
+                    <div class="w-full relative z-10">
+                        <a href="pong/index.html" class="btn-primary w-full py-4 px-6 btn-glow group">
+                            <span class="relative z-10 flex items-center gap-2">JOGAR <span class="material-symbols-outlined icon-arrow">arrow_forward</span></span>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- Leaderboard Section -->
+                <section class="panel-container w-full mt-6 relative overflow-hidden">
+                    <div class="absolute inset-0 pointer-events-none opacity-100 arcade-grid-overlay"></div>
+                    <div class="relative z-10 flex items-center justify-between" style="padding-bottom: 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--color-border-subtle);">
+                        <h2 class="font-label-dot-matrix text-interactive-red tracking-widest" style="font-size: 2rem; text-shadow: 2px 2px 0px rgba(0,0,0,0.5);">TOP SCORES [1
+                            Jogador]</h2>
+                        <div class="flex items-center gap-3">
+                            <button id="clearLeaderboardBtn" class="btn-outline px-2 py-1">Limpar</button>
+                        </div>
+                    </div>
+                    <div id="leaderboardContainer" class="relative z-10 flex flex-col font-label-dot-matrix text-sm w-full">
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script type="module" src="hub.js"></script>
+</body>
+
+</html>

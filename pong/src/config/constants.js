@@ -1,0 +1,51 @@
+export const CONFIG = {
+    COLORS: {
+        DAY: "#e2e8f0",
+        NIGHT: "#111111",
+        NEUTRAL: "#888888"
+    },
+    BONUS_COLORS: {
+        BIG_PADDLE: "#00ffff",
+        BIG_BALL: "#39ff14",
+        BOMB_BALL: "#ff00ff",
+        MULTI_BALL: "#ffff00",
+        RAINBOW: "rainbow"
+    },
+    RAINBOW_BLOCK_DURATION_MS: 8888,
+    TRAIL_LENGTH: 15,
+    SQUARE_SIZE: 25,
+    PADDLE_WIDTH: 15,
+    PADDLE_HEIGHT: 100,
+    PADDLE_SPEED: 8,
+    AI_SPEED: 2,
+    BALL_SIZE: 12,
+    BALL_INITIAL_SPEED: 4,
+    BALL_SPEED_MULTIPLIER_SP: 1.02,
+    BALL_SPEED_MULTIPLIER_MP: 1.08,
+    PARTICLES: {
+        BLOCK_HIT_COUNT: 3,
+        BLOCK_HIT_SPEED: 1.0,
+        BLOCK_HIT_SIZE: 3,
+        PADDLE_HIT_COUNT: 5,
+        PADDLE_HIT_SPEED: 1.0,
+        PADDLE_HIT_SIZE: 3,
+        RAINBOW_HIT_COUNT: 1,
+        RAINBOW_HIT_SPEED: 0.5,
+        RAINBOW_HIT_SIZE: 2,
+        BOMB_HIT_COUNT: 30,
+        BOMB_HIT_SPEED: 2.5,
+        BOMB_HIT_SIZE: 5
+    },
+    SHAKE: {
+        LIGHT_DURATION_MS: 50,
+        HEAVY_DURATION_MS: 100
+    }
+};
+
+export const GAME_STATE = {
+    MENU: 'MENU',
+    COUNTDOWN: 'COUNTDOWN',
+    PLAYING: 'PLAYING',
+    PAUSED: 'PAUSED',
+    GAME_OVER: 'GAME_OVER'
+};
