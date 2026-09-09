@@ -5,26 +5,26 @@ export class PhysicsEngine {
         this.game = game;
     }
 
-    update(dtSeconds) {
-        this.movePaddles();
-        this.moveBalls();
+    update(deltaTimeSeconds) {
+        this.movePaddles(deltaTimeSeconds);
+        this.moveBalls(deltaTimeSeconds);
         if (this.game.state.gameMode === 1) {
             this.handleSquareCollisions();
         }
     }
 
-    movePaddles() {
+    movePaddles(deltaTimeSeconds) {
         const state = this.game.state;
         const keys = this.game.input.keys;
         const canvasHeight = this.game.canvas.height;
 
-        if (keys.ArrowUp) state.paddleR.y -= CONFIG.PADDLE_SPEED;
-        if (keys.ArrowDown) state.paddleR.y += CONFIG.PADDLE_SPEED;
+        if (keys.ArrowUp) state.paddleR.y -= CONFIG.PADDLE_SPEED * deltaTimeSeconds;
+        if (keys.ArrowDown) state.paddleR.y += CONFIG.PADDLE_SPEED * deltaTimeSeconds;
         state.paddleR.y = Math.max(0, Math.min(canvasHeight - state.paddleR.h, state.paddleR.y));
 
         if (state.gameMode !== 1) {
-            if (keys.w) state.paddleL.y -= CONFIG.PADDLE_SPEED;
-            if (keys.s) state.paddleL.y += CONFIG.PADDLE_SPEED;
+            if (keys.w) state.paddleL.y -= CONFIG.PADDLE_SPEED * deltaTimeSeconds;
+            if (keys.s) state.paddleL.y += CONFIG.PADDLE_SPEED * deltaTimeSeconds;
             state.paddleL.y = Math.max(0, Math.min(canvasHeight - state.paddleL.h, state.paddleL.y));
         }
     }
@@ -32,21 +32,21 @@ export class PhysicsEngine {
     _handleVerticalWallBounces(ball, canvasHeight) {
         if (ball.y - ball.radius <= 0) {
             ball.y = ball.radius;
-            ball.dy = -ball.dy;
+            ball.velocityY = -ball.velocityY;
         } else if (ball.y + ball.radius >= canvasHeight) {
             ball.y = canvasHeight - ball.radius;
-            ball.dy = -ball.dy;
+            ball.velocityY = -ball.velocityY;
         }
     }
 
     _handlePaddleCollision(ball, paddle, isLeft, speedMultiplier) {
-        const checkLeft = isLeft ? ball.dx < 0 && ball.x - ball.radius <= paddle.x + paddle.w : false;
-        const checkRight = !isLeft ? ball.dx > 0 && ball.x + ball.radius >= paddle.x : false;
+        const checkLeft = isLeft ? ball.velocityX < 0 && ball.x - ball.radius <= paddle.x + paddle.w : false;
+        const checkRight = !isLeft ? ball.velocityX > 0 && ball.x + ball.radius >= paddle.x : false;
 
         if ((checkLeft || checkRight) && ball.y + ball.radius >= paddle.y && ball.y - ball.radius <= paddle.y + paddle.h) {
-            ball.dx = (isLeft ? Math.abs(ball.dx) : -Math.abs(ball.dx)) * speedMultiplier;
+            ball.velocityX = (isLeft ? Math.abs(ball.velocityX) : -Math.abs(ball.velocityX)) * speedMultiplier;
             
-            if (Math.abs(ball.dx) > 12) {
+            if (Math.abs(ball.velocityX) > CONFIG.SHAKE.MIN_SPEED_THRESHOLD) {
                 this.game.triggerHitPause(30);
                 this.game.shakeScreen('medium', CONFIG.SHAKE.LIGHT_DURATION_MS);
             } else {
@@ -58,11 +58,11 @@ export class PhysicsEngine {
                 ball.owner = isLeft ? CONFIG.COLORS.DAY : CONFIG.COLORS.NIGHT;
             }
             const hitPoint = (ball.y - (paddle.y + paddle.h / 2)) / (paddle.h / 2);
-            ball.dy = hitPoint * Math.abs(ball.dx);
+            ball.velocityY = hitPoint * Math.abs(ball.velocityX);
         }
     }
 
-    moveBalls() {
+    moveBalls(deltaTimeSeconds) {
         const state = this.game.state;
         const canvasWidth = this.game.canvas.width;
         const canvasHeight = this.game.canvas.height;
@@ -77,15 +77,15 @@ export class PhysicsEngine {
                 ball.trail.shift();
             }
 
-            ball.x += ball.dx;
-            ball.y += ball.dy;
+            ball.x += ball.velocityX * deltaTimeSeconds;
+            ball.y += ball.velocityY * deltaTimeSeconds;
 
             this._handleVerticalWallBounces(ball, canvasHeight);
 
             if (ball.x - ball.radius <= 0) {
                 if (isSinglePlayer) {
                     ball.x = ball.radius;
-                    ball.dx = -ball.dx;
+                    ball.velocityX = -ball.velocityX;
                 } else {
                     this.game.handleBallOut(true, i);
                     continue;
@@ -98,7 +98,7 @@ export class PhysicsEngine {
             this._handlePaddleCollision(ball, state.paddleL, true, speedMultiplier);
             this._handlePaddleCollision(ball, state.paddleR, false, speedMultiplier);
 
-            ball.dx = Math.min(Math.max(ball.dx, -15), 15);
+            ball.velocityX = Math.min(Math.max(ball.velocityX, -CONFIG.BALL_MAX_SPEED), CONFIG.BALL_MAX_SPEED);
         }
     }
 
@@ -126,8 +126,8 @@ export class PhysicsEngine {
                         const isBonus = Object.values(CONFIG.BONUS_COLORS).includes(hitColor);
 
                         if (!isBonus && Math.random() > 0.8) {
-                            if (Math.abs(Math.cos(angle)) > Math.abs(Math.sin(angle))) ball.dx = -ball.dx;
-                            else ball.dy = -ball.dy;
+                            if (Math.abs(Math.cos(angle)) > Math.abs(Math.sin(angle))) ball.velocityX = -ball.velocityX;
+                            else ball.velocityY = -ball.velocityY;
                         }
                     }
                 }

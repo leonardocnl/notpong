@@ -361,7 +361,7 @@ export class Game {
         
         let startX = this.canvas.width / 2;
         let startY = this.canvas.height / 2;
-        let dx = CONFIG.BALL_INITIAL_SPEED;
+        let velocityX = CONFIG.BALL_INITIAL_SPEED;
 
         const radius = state.activePowerups && state.activePowerups.bigBallTime > 0 ? CONFIG.BALL_SIZE * 2 : CONFIG.BALL_SIZE;
 
@@ -377,17 +377,17 @@ export class Game {
                 startX = Math.min(startX, state.paddleR.x - radius - 5);
             }
         } else {
-            dx = directionX ? directionX * CONFIG.BALL_INITIAL_SPEED : (Math.random() > 0.5 ? 1 : -1) * CONFIG.BALL_INITIAL_SPEED;
+            velocityX = directionX ? directionX * CONFIG.BALL_INITIAL_SPEED : (Math.random() > 0.5 ? 1 : -1) * CONFIG.BALL_INITIAL_SPEED;
         }
 
-        const dy = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 2 + 1);
+        const velocityY = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * CONFIG.BALL_MAX_ADDED_VERTICAL_SPEED + CONFIG.BALL_MIN_INITIAL_VERTICAL_SPEED);
         const owner = state.gameMode === 1 ? CONFIG.COLORS.NIGHT : CONFIG.COLORS.NEUTRAL;
 
         state.balls = [{
             x: startX,
             y: startY,
-            dx: dx,
-            dy: dy,
+            velocityX: velocityX,
+            velocityY: velocityY,
             radius: radius,
             owner: owner,
             trail: []
@@ -461,8 +461,8 @@ export class Game {
         let newBalls = [];
         if (hitColor === CONFIG.BONUS_COLORS.MULTI_BALL) {
             newBalls.push(
-                { ...ball, trail: [], dy: ball.dy - 3, dx: ball.dx * 1.05 },
-                { ...ball, trail: [], dy: ball.dy + 3, dx: ball.dx * 1.05 }
+                { ...ball, trail: [], velocityY: ball.velocityY - CONFIG.BALL_MULTIBALL_VERTICAL_SPLIT_SPEED, velocityX: ball.velocityX * 1.05 },
+                { ...ball, trail: [], velocityY: ball.velocityY + CONFIG.BALL_MULTIBALL_VERTICAL_SPLIT_SPEED, velocityX: ball.velocityX * 1.05 }
             );
             this.shakeScreen('medium');
         }

@@ -10,8 +10,8 @@ export class ParticleSystem {
             this.particles.push({
                 x: x,
                 y: y,
-                dx: Math.cos(angle) * speed,
-                dy: Math.sin(angle) * speed,
+                velocityX: Math.cos(angle) * speed,
+                velocityY: Math.sin(angle) * speed,
                 color: color,
                 size: Math.random() * size + 2,
                 life: 1.0,
@@ -20,12 +20,12 @@ export class ParticleSystem {
         }
     }
 
-    update(dtSeconds) {
+    update(deltaTimeSeconds) {
         for (let i = this.particles.length - 1; i >= 0; i--) {
             let particle = this.particles[i];
-            particle.x += particle.dx * dtSeconds;
-            particle.y += particle.dy * dtSeconds;
-            particle.life -= particle.decay * dtSeconds;
+            particle.x += particle.velocityX * deltaTimeSeconds;
+            particle.y += particle.velocityY * deltaTimeSeconds;
+            particle.life -= particle.decay * deltaTimeSeconds;
             if (particle.life <= 0) {
                 this.particles.splice(i, 1);
             }
