@@ -82,3 +82,20 @@ Ponto de partida da aplicação. Inicializa a classe central do jogo e faz o boo
    
 3. **Escalando e Ajustando Dificuldades:**
    Qualquer alteração de jogabilidade — como deixar a bola mais rápida, os efeitos mais vibrantes, os temporizadores maiores ou os blocos de bônus mais frequentes — **deve ser feita unicamente no arquivo `config/constants.js`**. O código de regra consumirá as alterações automaticamente.
+
+---
+
+## 4. Animações de Vitória e Estados Especiais
+
+O projeto possui um sistema de animações "Juicy" (altamente satisfatórias) executadas no final das partidas, desenhadas para dar impacto visual à vitória sem quebrar o laço de repetição ou causar bugs de colisão:
+
+### 4.1 A Explosão do Arco-Íris (Single-player)
+Quando o jogador captura o Bloco Arco-Íris, em vez do jogo encerrar imediatamente, ele entra no estado de `rainbowAnimation`. 
+- **O que acontece por baixo dos panos:** O método `update` de `Game.js` congela temporariamente os cálculos normais da `PhysicsEngine`. Ele agrupa todos os blocos restantes, embaralha-os, e inicia um laço destruindo-os um por um a cada `10ms` (valor vindo de `RAINBOW_ANIMATION_DELAY_SEC`). A cada bloco destruído, mais partículas são emitidas e ocorre um leve *Camera Shake*.
+- Só quando o último bloco da fila é destruído, a tela de vitória final é ativada.
+
+### 4.2 Dominação de Território e Implosão (Multiplayer)
+No modo de 2 Jogadores, alcançar 10 pontos desencadeia a `multiplayerAnimation`.
+- **Fase 1 (Flood):** A cor do vencedor pinta dinamicamente a tela partindo do seu lado, utilizando a métrica de `floodProgress` controlada por `deltaTimeSeconds`.
+- **Fase 2 (Implosão):** Quando a inundação alcança o adversário (80% da tela), a largura e altura da raquete do perdedor são zeradas e ela é convertida em 150 partículas lançadas num violento `heavy shake`.
+- **Fase 3 (Wait):** A tela fica congelada com o banho de partículas preenchendo a tela do vencedor por 1 segundo, criando um cenário de destruição dramático que se mantém renderizado como plano de fundo para o letreiro final de "VOCÊ VENCEU".

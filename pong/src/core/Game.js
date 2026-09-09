@@ -189,6 +189,22 @@ export class Game {
             return;
         }
 
+        if (this.state.rainbowAnimation) {
+            this._processRainbowAnimation(deltaTimeSeconds);
+            this.particles.update(deltaTimeSeconds);
+            this.renderer.draw(this.state);
+            requestAnimationFrame(this.update);
+            return;
+        }
+
+        if (this.state.multiplayerAnimation && this.state.multiplayerAnimation.phase !== 'done') {
+            this._processMultiplayerAnimation(deltaTimeSeconds);
+            this.particles.update(deltaTimeSeconds);
+            this.renderer.draw(this.state);
+            requestAnimationFrame(this.update);
+            return;
+        }
+
         this.state.timeElapsed += deltaTimeSeconds;
         this.ui.updateTimer(this.state.timeElapsed);
 
@@ -347,11 +363,14 @@ export class Game {
     _checkMultiplayerWinCondition() {
         const WINNING_SCORE = 10;
         if (this.state.dayScore >= WINNING_SCORE || this.state.nightScore >= WINNING_SCORE) {
-            this.state.currentState = GAME_STATE.GAME_OVER;
-            if (this.state.dayScore >= WINNING_SCORE) {
-                this.ui.showGameOver("JOGADOR 1 VENCEU", CONFIG.COLORS.DAY, false);
-            } else {
-                this.ui.showGameOver("JOGADOR 2 VENCEU", "#FF0033", false);
+            if (!this.state.multiplayerAnimation) {
+                this.state.multiplayerAnimation = {
+                    winner: this.state.dayScore >= WINNING_SCORE ? 1 : 2,
+                    phase: 'flood',
+                    timer: 0,
+                    floodProgress: 0,
+                    imploded: false
+                };
             }
         }
     }
@@ -484,11 +503,83 @@ export class Game {
     activateRainbowPowerup(ballOwner) {
         const state = this.state;
         state.rainbowCoords = null;
+        
+        let blocksToDestroy = [];
         for (let gridX = 0; gridX < state.numSquaresX; gridX++) {
             for (let gridY = 0; gridY < state.numSquaresY; gridY++) {
                 if (state.gridBlocks[gridX][gridY] === CONFIG.COLORS.DAY) {
-                    state.gridBlocks[gridX][gridY] = ballOwner;
-                    this.particles.spawn(gridX * CONFIG.SQUARE_SIZE + 10, gridY * CONFIG.SQUARE_SIZE + 10, ballOwner, CONFIG.PARTICLES.RAINBOW_HIT_COUNT, CONFIG.PARTICLES.RAINBOW_HIT_SPEED, CONFIG.PARTICLES.RAINBOW_HIT_SIZE);
+                    blocksToDestroy.push({ x: gridX, y: gridY });
+                }
+            }
+        }
+
+        blocksToDestroy.sort(() => Math.random() - 0.5);
+
+        state.rainbowAnimation = {
+            blocks: blocksToDestroy,
+            timer: 0,
+            interval: CONFIG.RAINBOW_ANIMATION_DELAY_SEC,
+            owner: ballOwner
+        };
+    }
+
+    _processRainbowAnimation(deltaTimeSeconds) {
+        const anim = this.state.rainbowAnimation;
+        anim.timer += deltaTimeSeconds;
+        
+        while (anim.timer >= anim.interval && anim.blocks.length > 0) {
+            anim.timer -= anim.interval;
+            const block = anim.blocks.pop();
+            this.state.gridBlocks[block.x][block.y] = anim.owner;
+            this.particles.spawn(
+                block.x * CONFIG.SQUARE_SIZE + 10, 
+                block.y * CONFIG.SQUARE_SIZE + 10, 
+                anim.owner, 
+                CONFIG.PARTICLES.RAINBOW_HIT_COUNT * 2, 
+                CONFIG.PARTICLES.RAINBOW_HIT_SPEED * 1.5, 
+                CONFIG.PARTICLES.RAINBOW_HIT_SIZE * 1.5
+            );
+            
+            if (anim.blocks.length % 4 === 0) {
+                this.shakeScreen('light', 30);
+            }
+        }
+
+        if (anim.blocks.length === 0) {
+            this.state.rainbowAnimation = null;
+            this.checkWinCondition();
+        }
+    }
+
+    _processMultiplayerAnimation(deltaTimeSeconds) {
+        const anim = this.state.multiplayerAnimation;
+        anim.timer += deltaTimeSeconds;
+
+        if (anim.phase === 'flood') {
+            anim.floodProgress = Math.min(1, anim.timer / 1.0);
+            
+            if (anim.floodProgress > 0.8 && !anim.imploded) {
+                anim.imploded = true;
+                const paddle = anim.winner === 1 ? this.state.paddleR : this.state.paddleL;
+                const color = anim.winner === 1 ? '#FF0033' : CONFIG.COLORS.DAY;
+                this.particles.spawn(paddle.x + paddle.w / 2, paddle.y + paddle.h / 2, color, 150, 4.0, 5);
+                this.shakeScreen('heavy', 500);
+                paddle.h = 0;
+                paddle.w = 0;
+            }
+
+            if (anim.floodProgress >= 1) {
+                anim.phase = 'wait';
+                anim.timer = 0;
+            }
+        } else if (anim.phase === 'wait') {
+            if (anim.timer >= 1.0) {
+                anim.phase = 'done';
+                this.state.currentState = GAME_STATE.GAME_OVER;
+                if (anim.winner === 1) {
+                    this.ui.showGameOver("JOGADOR 1 VENCEU", CONFIG.COLORS.DAY, false);
+                } else {
+                    this.ui.showGameOver("JOGADOR 2 VENCEU", "#FF0033", false);
                 }
             }
         }

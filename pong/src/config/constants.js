@@ -12,6 +12,7 @@ export const CONFIG = {
         RAINBOW: "rainbow"
     },
     RAINBOW_BLOCK_DURATION_MS: 8888,
+    RAINBOW_ANIMATION_DELAY_SEC: 0.01,
     TRAIL_LENGTH: 15,
     SQUARE_SIZE: 25,
     PADDLE_WIDTH: 15,

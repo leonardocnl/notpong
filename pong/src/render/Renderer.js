@@ -16,14 +16,27 @@ export class Renderer {
             this.ctx.fillStyle = CONFIG.COLORS.NIGHT;
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-            this.ctx.setLineDash([15, 15]);
-            this.ctx.beginPath();
-            this.ctx.moveTo(this.canvas.width / 2, 0);
-            this.ctx.lineTo(this.canvas.width / 2, this.canvas.height);
-            this.ctx.strokeStyle = CONFIG.COLORS.NEUTRAL;
-            this.ctx.lineWidth = 4;
-            this.ctx.stroke();
-            this.ctx.setLineDash([]);
+            if (state.multiplayerAnimation) {
+                const anim = state.multiplayerAnimation;
+                this.ctx.fillStyle = anim.winner === 1 ? CONFIG.COLORS.DAY : '#FF0033';
+                const width = this.canvas.width * anim.floodProgress;
+                if (anim.winner === 1) {
+                    this.ctx.fillRect(0, 0, width, this.canvas.height);
+                } else {
+                    this.ctx.fillRect(this.canvas.width - width, 0, width, this.canvas.height);
+                }
+            }
+
+            if (!state.multiplayerAnimation) {
+                this.ctx.setLineDash([15, 15]);
+                this.ctx.beginPath();
+                this.ctx.moveTo(this.canvas.width / 2, 0);
+                this.ctx.lineTo(this.canvas.width / 2, this.canvas.height);
+                this.ctx.strokeStyle = CONFIG.COLORS.NEUTRAL;
+                this.ctx.lineWidth = 4;
+                this.ctx.stroke();
+                this.ctx.setLineDash([]);
+            }
         }
 
         this.drawPaddles(state);
